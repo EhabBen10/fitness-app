@@ -1,6 +1,6 @@
 'use server';
 import { cookies } from 'next/headers';
-import { User } from "./definitions";
+import { Exercise, User } from "./definitions";
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -197,6 +197,10 @@ type CreateWorkoutState = {
     message: string | null;
     errors: Record<string, string[]>;
 };
+type CreateExerciseState = {
+    message: string | null;
+    errors: Record<string, string[]>;
+};
 
 export async function createWorkout(
     prevState: CreateWorkoutState,
@@ -268,6 +272,69 @@ export async function createWorkout(
     }
 }
 
+export async function addExerciseToServer(
+    _prevState: Exercise,
+    formData: FormData,
+    workoutId: number
+): Promise<CreateExerciseState> {
+    try {
+        const name = formData.get('name');
+        const description = formData.get('description');
+        const sets = formData.get('sets');
+        const repetitions = formData.get('repetitions');
+        const time = formData.get('time');
+
+        const validatedFields = WorkoutExerciseSchema.safeParse({
+            name,
+            description,
+            sets: Number(sets),
+            repetitions: Number(repetitions),
+            time,
+        });
+
+        if (!validatedFields.success) {
+            return {
+                message: 'Missing or invalid fields.',
+                errors: validatedFields.error.flatten().fieldErrors as Record<string, string[]>,
+            };
+        }
+
+        const headers = await getAuthHeaders();
+        const requestBody = {
+            name: validatedFields.data.name,
+            description: validatedFields.data.description,
+            sets: validatedFields.data.sets,
+            repetitions: validatedFields.data.repetitions,
+            time: validatedFields.data.time,
+        };
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/Exercises/Program/${workoutId}`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(requestBody),
+        });
+        if (res.status !== 201 && res.status !== 200) {
+            const errorData = await res.text();
+            console.error(`API Error - Status: ${res.status}, Response:`, errorData);
+            return {
+                message: 'Failed to add exercise. Please try again.',
+                errors: {},
+            };
+        }
+        revalidatePath('/dashboard/personalTrainer/workouts/workout?workoutId=' + workoutId);
+        redirect('/dashboard/personalTrainer/workouts/workout?workoutId=' + workoutId);
+    } catch (error) {
+        // Re-throw Next.js redirect errors so they propagate correctly
+        if ((error as any)?.digest?.startsWith('NEXT_REDIRECT')) {
+            throw error;
+        }
+
+        return {
+            message: 'An error occurred. Please try again.',
+            errors: {},
+        };
+    }
+}
+
 export async function fetchWorkouts() {
     const headers = await getAuthHeaders();
 
@@ -282,4 +349,19 @@ export async function fetchWorkouts() {
 
     const workouts = await res.json();
     return workouts;
+}
+
+export async function fetchWorkoutById(workoutId: number) {
+    const headers = await getAuthHeaders();
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/WorkoutPrograms/${workoutId}`, {
+        method: 'GET',
+        headers,
+    });
+    if (!res.ok) {
+        throw new Error('Failed to fetch workout');
+    }
+
+    const workout = await res.json();
+    return workout;
 }

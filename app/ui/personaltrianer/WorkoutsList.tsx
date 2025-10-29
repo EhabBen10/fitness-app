@@ -13,7 +13,7 @@ export default function WorkoutsList({ workouts }: { workouts: WorkoutFormData[]
         <div className="space-y-8">
             {workouts.map((workout, index) => (
                 <div key={index} className="p-4 border rounded-lg shadow-sm bg-white">
-                    <Workout workout={workout} />
+                    <Workout workout={workout} visibilityExercise={false} visibilitybutton={true} />
                 </div>
             ))}
         </div>

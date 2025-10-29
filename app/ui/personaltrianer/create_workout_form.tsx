@@ -9,19 +9,12 @@ import {
 import { Button } from '@/app/ui/button';
 import { useActionState, useState } from 'react';
 import { createWorkout } from '@/app/lib/data';
+import { Exercise } from '@/app/lib/definitions';
 
 type FormState = {
     message: string | null;
     errors: Record<string, string[]>;
 };
-
-interface Exercise {
-    name: string;
-    description: string;
-    sets: number;
-    repetitions: number;
-    time: string;
-}
 
 interface CreateWorkoutFormProps {
     clientId: number;
@@ -253,7 +246,7 @@ export default function CreateWorkoutForm({ clientId }: CreateWorkoutFormProps) 
                                         time: e.target.value,
                                     }))
                                 }
-                                placeholder="e.g., 60s"
+                                placeholder="Time it should last in sec"
                                 className="block w-full rounded-md border border-gray-200 px-4 py-2 text-sm outline-2 placeholder:text-gray-500"
                             />
                         </div>
