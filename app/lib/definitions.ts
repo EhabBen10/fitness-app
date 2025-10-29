@@ -23,6 +23,7 @@ export interface Exercise {
 }
 
 export interface WorkoutFormData {
+    workoutProgramId: number;
     name: string;
     description: string;
     exercises: Exercise[];
