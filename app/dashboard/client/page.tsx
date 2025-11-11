@@ -2,6 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 import { User, WorkoutFormData } from "@/app/lib/definitions";
 import { fetchWorkouts } from "@/app/lib/data";
+import ClientWorkoutList from "../client/ClientWorkoutList";
 
 export default async function ClientHomepage() {
     const cookieStore = await cookies();
@@ -71,47 +72,8 @@ export default async function ClientHomepage() {
                     </div>
                 </div>
 
-                {/* ✅ Workout Program List */}
-                <div className="mt-8">
-                    <h2 className="text-xl font-semibold mb-4">Your Workout Programs</h2>
-                    {workouts.length === 0 ? (
-                        <p className="text-gray-500">No workout programs found.</p>
-                    ) : (
-                        <div className="space-y-4">
-                            {workouts.map((program) => (
-                                <div
-                                    key={program.workoutProgramId}
-                                    className="border border-gray-200 dark:border-slate-700 rounded-lg p-4 bg-gray-50 dark:bg-slate-800"
-                                >
-                                    <h3 className="text-lg font-semibold mb-2">
-                                        {program.name}
-                                    </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                                        {program.description}
-                                    </p>
-
-                                    <div className="space-y-2">
-                                        {program.exercises.map((exercise, idx) => (
-                                            <div
-                                                key={idx}
-                                                className="border-l-4 border-blue-500 pl-3"
-                                            >
-                                                <p className="font-medium">{exercise.name}</p>
-                                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                    {exercise.description}
-                                                </p>
-                                                <p className="text-sm text-gray-500">
-                                                    Sets: {exercise.sets} • Reps: {exercise.repetitions} • Time:{" "}
-                                                    {exercise.time || "-"}
-                                                </p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                {/* ✅ Workout List Component */}
+                <ClientWorkoutList workouts={workouts} />
             </div>
         </div>
     );
