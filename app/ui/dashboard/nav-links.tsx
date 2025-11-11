@@ -48,13 +48,8 @@ export default function NavLinks() {
                     { name: 'Workouts', href: '/dashboard/personalTrainer/workouts', icon: ClipboardDocumentListIcon },
                 ]
                 : role === 'Client'
-                    ? [
-                        { name: 'Home', href: '/dashboard', icon: HomeIcon },
-                        { name: 'My Programs', href: '/dashboard/client/programs', icon: ClipboardDocumentListIcon },
-                    ]
-                    : [
-                        { name: 'Home', href: '/dashboard', icon: HomeIcon }, // fallback
-                    ];
+                    ? []
+                    : [];
 
     return (
         <>
