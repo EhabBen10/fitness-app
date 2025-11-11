@@ -19,7 +19,6 @@ export default async function ClientHomepage() {
         } | null;
     }
 
-    // ✅ Hent workoutprogrammer
     let workouts: WorkoutFormData[] = [];
     try {
         workouts = await fetchWorkouts();
@@ -72,7 +71,6 @@ export default async function ClientHomepage() {
                     </div>
                 </div>
 
-                {/* ✅ Workout List Component */}
                 <ClientWorkoutList workouts={workouts} />
             </div>
         </div>
